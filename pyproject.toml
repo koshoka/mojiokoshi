@@ -61,7 +61,7 @@ warn_unreachable = true
 strict_equality = true
 
 [[tool.mypy.overrides]]
-module = ["pytest", "whisper"]
+module = ["pytest", "whisper", "gradio"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

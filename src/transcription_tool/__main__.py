@@ -1,4 +1,4 @@
-"""メインエントリーポイント"""
+"""メインエントリーポイント."""
 
 from transcription_tool.app import main
 
