@@ -102,6 +102,17 @@ def create_app() -> gr.Blocks:
         padding: 16px !important;
         margin: 8px 0 !important;
     }
+    /* ドロップダウンのカーソル修正 */
+    .gr-dropdown {
+        cursor: pointer !important;
+    }
+    .gr-dropdown svg {
+        cursor: pointer !important;
+    }
+    /* ドロップダウン全体をクリッカブルに */
+    select, .gr-input-dropdown {
+        cursor: pointer !important;
+    }
     """
 
     with gr.Blocks(
