@@ -1,7 +1,9 @@
 """文字起こし処理を行うモジュール."""
 
 from pathlib import Path
-from typing import Any, Union
+from typing import Any, Optional, Union
+
+import whisper
 
 
 class Transcriber:
@@ -15,6 +17,7 @@ class Transcriber:
             model_name: 使用するWhisperモデルの名前（デフォルト: large-v3）
         """
         self.model_name = model_name
+        self._model: Optional[Any] = None  # 遅延ロード用
 
     def transcribe(self, audio_path: Union[str, Path]) -> dict[str, Any]:
         """音声ファイルを文字起こしする.
@@ -41,5 +44,11 @@ class Transcriber:
         if audio_path.suffix.lower() not in supported_formats:
             raise ValueError(f"対応していない音声フォーマット: {audio_path.suffix}")
 
-        # TODO: Whisperモデルのロードと文字起こし処理
-        return {"text": ""}
+        # モデルの遅延ロード
+        if self._model is None:
+            self._model = whisper.load_model(self.model_name)
+
+        # 音声ファイルを文字起こし
+        assert self._model is not None
+        result: dict[str, Any] = self._model.transcribe(str(audio_path))
+        return result

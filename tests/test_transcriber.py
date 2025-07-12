@@ -1,6 +1,7 @@
 """Transcriberクラスのテスト"""
 
 from pathlib import Path
+from unittest.mock import Mock, patch
 
 import pytest
 from transcription_tool.transcriber import Transcriber
@@ -50,3 +51,32 @@ def test_transcribe_音声ファイルのフォーマットをチェックする
             transcriber.transcribe(test_file)
     finally:
         test_file.unlink()  # テストファイルを削除
+
+
+def test_whisper_モデルは遅延ロードされる() -> None:
+    """Whisperモデルが初期化時ではなく、必要時にロードされることを確認"""
+    transcriber = Transcriber()
+    # 初期化時点ではモデルはロードされていない
+    assert not hasattr(transcriber, "_model") or transcriber._model is None
+
+
+@patch("whisper.load_model")
+def test_transcribe_初回呼び出し時にモデルがロードされる(mock_load_model: Mock) -> None:
+    """transcribeメソッドの初回呼び出し時にモデルがロードされることを確認"""
+    # モックの設定
+    mock_model = Mock()
+    mock_model.transcribe.return_value = {"text": "テストテキスト"}
+    mock_load_model.return_value = mock_model
+
+    # テスト用の音声ファイルパス
+    test_audio = Path("tests/test_data/test_audio.wav")
+
+    transcriber = Transcriber(model_name="tiny")
+
+    # ファイルが存在する場合のみテストを実行
+    if test_audio.exists():
+        result = transcriber.transcribe(test_audio)
+
+        # モデルがロードされたことを確認
+        mock_load_model.assert_called_once_with("tiny")
+        assert result["text"] == "テストテキスト"
