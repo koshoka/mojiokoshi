@@ -75,7 +75,7 @@ def test_transcribe_初回呼び出し時にモデルがロードされる(mock_
 
     # ファイルが存在する場合のみテストを実行
     if test_audio.exists():
-        result = transcriber.transcribe(test_audio)
+        result = transcriber.transcribe(test_audio, progress_callback=None)
 
         # モデルがロードされたことを確認
         mock_load_model.assert_called_once_with("tiny")
